@@ -5,41 +5,6 @@ import { CSSTransition } from 'react-transition-group';
 import './css/App.css';
 
 
-/*class AnswerControl extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {value: 0};
-
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({value: event.target.value});
-  }
-
-  render() {
-    const TEST = {
-            height: '400px'
-          },
-          TEST_RANGE = {
-            transform: 'rotate(270deg)',
-            scrollBehavior: 'smooth'
-          };
-
-    return (
-      <div style={TEST}>
-        <input type="range"
-          className="w-1/4 bg-teal-200 appearance-none rounded-full shadow-slider outline-none"
-          style={TEST_RANGE}
-          min="0"
-          max="3"
-          step="1"
-          value={this.state.value} onChange={this.handleChange} />
-      </div>
-    );
-  }
-}*/
-
 function ScreenerFooter(props) {
   const LOCAL_STYLE = {
           borderTop: '1px solid #a0aec0'
@@ -53,16 +18,37 @@ function ScreenerFooter(props) {
 }
 
 class AnswerControl extends React.Component {
+  /*renderLargeDevices() {
+    return (
+      <div className="invisible md:visible lg:visible flex flex-col">
+        <button className="border-2 border-teal-200 text-gray-700 font-bold mb-4 py-2 px-4 rounded"
+          type="button"
+        >some answer choice 1</button>
+        <button className="border-2 border-teal-200 text-gray-700 font-bold mb-4 py-2 px-4 rounded"
+          type="button"
+        >some answer choice 2</button>
+        <button className="border-2 border-teal-200 text-gray-700 font-bold mb-4 py-2 px-4 rounded"
+          type="button"
+        >some answer choice 3</button>
+        <button className="border-2 border-teal-200 text-gray-700 font-bold mb-4 py-2 px-4 rounded"
+          type="button"
+        >some answer choice 4</button>
+      </div>
+    );
+  }*/
+
   render() {
     return (
-      <input
-        className="as-range appearance-none outline-none"
-        type="range"
-        value={this.props.value}
-        min="0"
-        max="3"
-        onChange={(e) => this.props.listener(e)}
-      />
+      <div>
+        <input
+          className="md:invisible lg:invisible as-range appearance-none outline-none"
+          type="range"
+          value={this.props.value}
+          min="0"
+          max="3"
+          onChange={(e) => this.props.listener(e)}
+        />
+      </div>
     );
   }
 }
@@ -70,21 +56,19 @@ class AnswerControl extends React.Component {
 class ScreenerControl extends React.Component {
   render() {
     return (
-      <div className="flex mt-40 items-center justify-around">
+      <div className="flex mt-16 sm:mt-40 items-center justify-around">
         <button
           className="w-32 border-2 border-gray-500 text-gray-700 focus:border-red-500 focus:outline-none font-bold py-2 px-4 rounded"
           type="button"
           onClick={() => this.props.doAction('cancel')}
         >
-        Cancel
-        </button>
+        Cancel</button>
         <button
           className="w-32 bg-green-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
           type="button"
           onClick={() => this.props.doAction('next')}
         >
-        Next
-        </button>
+        Next</button>
       </div>
     );
   }
@@ -196,31 +180,6 @@ class ScreenerQuestion extends React.Component {
     );
   }
 }
-
-/*const duration = 500;
-const defaultStyle = {
-  transition: `all ${duration}ms ease-in`,
-  opacity: 1,
-}
-
-const transitionStyles = {
-  entering: { opacity: 0.3 },
-  entered:  { opacity: 1 },
-  exiting:  { opacity: 0 },
-  exited:  { opacity: 0 },
-};
-const Fade = ({ in: inProp }) => (
-  <Transition in={inProp} timeout={duration}>
-    {state => (
-      <div className="bg-blue-700 text-white" style={{
-        ...defaultStyle,
-        ...transitionStyles[state]
-      }}>
-        I'm a fade Transition!
-      </div>
-    )}
-  </Transition>
-);*/
 
 function App() {
   return (
