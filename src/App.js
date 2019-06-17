@@ -53,54 +53,16 @@ function ScreenerFooter(props) {
 }
 
 class AnswerControl extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {value: 0};
-    this.bulletRef = React.createRef();
-
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(event) {
-    //let sliderValue = event.target.value;
-    this.setState({value: event.target.value});
-  }
-
   render() {
-    const currval = this.state.value;
-
-    /*return (
-      <div className="bg-red-700 px-10">
-        <div className="range-slider">
-          <span id="rs-bullet" className="rs-label" ref={this.bulletRef}>{currval}</span>
-          <input id="rs-range-line"
-            className="rs-range"
-            type="range"
-            value={currval}
-            min="0"
-            max="200"
-            onChange={this.handleChange}
-          />
-        </div>
-        <div className="box-minmax">
-          <span>0</span><span>200</span>
-        </div>
-      </div>
-    );*/
     return (
-      <div className="flex flex-col h-64">
-        <div className="border-dashed border-4 border-black">
-          <input
-            className="as-range appearance-none outline-none"
-            type="range"
-            value={currval}
-            min="0"
-            max="4"
-            onChange={this.handleChange}
-          />
-        </div>
-        <div ref={this.bulletRef}>{currval}</div>
-      </div>
+      <input
+        className="as-range appearance-none outline-none"
+        type="range"
+        value={this.props.value}
+        min="0"
+        max="3"
+        onChange={(e) => this.props.listener(e)}
+      />
     );
   }
 }
@@ -108,24 +70,21 @@ class AnswerControl extends React.Component {
 class ScreenerControl extends React.Component {
   render() {
     return (
-      <div className="md:flex md:items-center mt-16">
-        <div className="md:w-1/3"></div>
-        <div className="md:w-2/3">
-          <button
-          className="w-32 border-2 border-green-500 text-gray-700 focus:border-red-500 focus:outline-none font-bold py-2 px-4 rounded"
+      <div className="flex mt-40 items-center justify-around">
+        <button
+          className="w-32 border-2 border-gray-500 text-gray-700 focus:border-red-500 focus:outline-none font-bold py-2 px-4 rounded"
           type="button"
           onClick={() => this.props.doAction('cancel')}
-          >
-          Cancel
-          </button>
-          <button
-            className="w-32 mr-4 bg-green-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-            type="button"
-            onClick={() => this.props.doAction('next')}
-          >
-            Next
-          </button>
-        </div>
+        >
+        Cancel
+        </button>
+        <button
+          className="w-32 bg-green-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+          type="button"
+          onClick={() => this.props.doAction('next')}
+        >
+        Next
+        </button>
       </div>
     );
   }
@@ -133,58 +92,81 @@ class ScreenerControl extends React.Component {
 
 class ScreenerQuestion extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
+
+    this.answerListener = this.answerListener.bind(this);
+    this.choices = [
+      {
+        "text": "not at all",
+        "value": 0
+      },{
+        "text": "several days",
+        "value": 1
+      },{
+        "text": "more than half the days",
+        "value": 2
+      },{
+        "text": "nearly every day",
+        "value": 3
+      }
+    ];
+    this.qitr = 0;
+    this.questions = [
+      "Feeling nervous, anxious or on edge",
+      "Not being able to stop or control worrying",
+      "Worrying too much about different things",
+      "Trouble relaxing",
+      "Being so restless that it is hard to sit still",
+      "Becoming easily annoyed or irritable",
+      "Feeling afraid as if something awful might happen"
+    ];
+
     this.state = {
+      answerValue: 0,
       header: 'Over the last 2 weeks, how often have you been bothered by the following problems?',
-      question: 'Feeling nervous, anxious or on edge',
-      choices: [
-        {
-          "text": "not at all",
-          "value": 0
-        },{
-          "text": "several days",
-          "value": 1
-        },{
-          "text": "more than half the days",
-          "value": 2
-        },{
-          "text": "nearly every day",
-          "value": 3
-        }
-      ],
+      qitr: 0,
       questionTransitioning: false
     };
   }
 
   handleAction(action) {
+    let qitrNext = this.state.qitr + 1;
+
+    //"next" question (button)
     if( action === 'next' ){
-      this.setState({
-        questionTransitioning: true
-      });
-      setTimeout(() => {
+      //need to make sure we can fetch another question
+      if( qitrNext < this.questions.length ){
+        //TODO: save before updating state
         this.setState({
-          question: 'Not being able to stop or control worrying',
-          questionTransitioning: false
+          questionTransitioning: true
         });
-      }, 300);
+        setTimeout(() => {
+          this.setState({
+            answerChoice: this.choices[0].text,
+            answerValue: 0,
+            qitr: qitrNext,
+            questionTransitioning: false
+          });
+        }, 300);
+      } else{
+        console.log('redirect to completion screen');
+      }
+    } else{
+      //"cancel" screener (button)
+      console.log('redirect to beginning screen');
     }
   }
 
+  answerListener(e) {
+    this.setState({
+      answerChoice: this.choices[e.target.value].text,
+      answerValue: e.target.value
+    });
+  }
+
   render() {
-    const ANSWER_SLIDER = {
-            top: 0,
-            position: 'relative',
-            height: '100%',
-            minHeight: '16rem',
-            'touchAction': 'pan-y'
-          },
-          ANSWER_HANDLE = {
-            top: '210px',
-            left: '-0.75rem',
-            position: 'absolute',
-          };
-    const questionText = this.state.question,
-          questionChoices = this.state.choices,
+    const answerText = this.choices[this.state.answerValue].text,
+          questionText = this.questions[this.state.qitr],
           questionHeader = this.state.header;
 
     return (
@@ -204,24 +186,11 @@ class ScreenerQuestion extends React.Component {
             <div className="px-6 py-4 text-left text-indigo-600 text-lg capitalize">
               {questionText}
             </div>
-            <div className="mt-4 text-purple-800"><strong>{questionChoices[0].text}</strong></div>
+            <div className="mt-4 text-purple-800"><strong>{answerText}</strong></div>
           </div>
-          <div className="flex flex-row w-20">
-            <div className="flex flex-col w-1/5">
-              <div className="w-4 bg-teal-200 rounded-full shadow-slider" style={ANSWER_SLIDER}>
-                <div className="h-6 w-10 bg-gray-500 rounded shadow-2xl" style={ANSWER_HANDLE}></div>
-              </div>
-            </div>
-            <div className="flex flex-col-reverse w-4/5 text-left text-gray-800">
-              <div className="flex-1"><p className="mt-4 pl-2">––</p></div>
-              <div className="flex-1"><p className="mt-4 pl-2">––</p></div>
-              <div className="flex-1"><p className="mt-4 pl-2">––</p></div>
-              <div className="flex-1"><p className="mt-4 pl-2">––</p></div>
-            </div>
-          </div>
+          <AnswerControl listener={this.answerListener} value={this.state.answerValue}/>
         </div>
         </CSSTransition>
-        <AnswerControl />
         <ScreenerControl doAction={(a) => this.handleAction(a)} />
       </div>
     );
